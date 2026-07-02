@@ -1,0 +1,9 @@
+{
+  "name": "poultry-erp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "build": "cd backend && npm install"
+  }
+}
