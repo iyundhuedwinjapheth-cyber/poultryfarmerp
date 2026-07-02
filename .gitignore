@@ -13,3 +13,6 @@ pnpm-debug.log*
 
 # VS Code
 .vscode/
+
+# Local status
+.gitstatus.txt
