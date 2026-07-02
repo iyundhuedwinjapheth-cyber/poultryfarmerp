@@ -1,0 +1,18 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "username": "admin",
+      "password": "$2a$10$onAxQwu4der0qO6kisoaLuI.zoXrPpcTujxL2uNx9uwAs4JFlrPwK",
+      "displayName": "Farm Manager",
+      "role": "admin",
+      "isActive": true,
+      "created_at": "2026-07-02T20:21:35.495Z"
+    }
+  ],
+  "flocks": [],
+  "records": [],
+  "feeds": [],
+  "sales": [],
+  "expenses": []
+}

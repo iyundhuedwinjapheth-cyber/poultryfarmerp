@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#065f46">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>PoultryERP — Farm Management</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --green-50:#ecfdf5;--green-100:#d1fae5;--green-200:#a7f3d0;--green-500:#10b981;--green-600:#059669;--green-700:#047857;--green-800:#065f46;--green-900:#064e3b;
+  --blue-50:#eff6ff;--blue-100:#dbeafe;--blue-500:#3b82f6;--blue-600:#2563eb;
+  --amber-50:#fffbeb;--amber-100:#fef3c7;--amber-500:#f59e0b;--amber-600:#d97706;
+  --red-50:#fef2f2;--red-100:#fee2e2;--red-500:#ef4444;--red-600:#dc2626;
+  --slate-50:#f8fafc;--slate-100:#f1f5f9;--slate-200:#e2e8f0;--slate-300:#cbd5e1;--slate-400:#94a3b8;--slate-500:#64748b;--slate-600:#475569;--slate-700:#334155;--slate-800:#1e293b;--slate-900:#0f172a;
+  --primary:var(--green-600);--primary-dark:var(--green-700);--primary-light:var(--green-100);--primary-bg:var(--green-50);
+  --surface:#fff;--bg:var(--slate-50);--text:var(--slate-900);--text-secondary:var(--slate-500);
+  --border:var(--slate-200);--shadow-sm:0 1px 2px rgba(0,0,0,.05);--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.08),0 2px 4px -2px rgba(0,0,0,.05);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -4px rgba(0,0,0,.04);
+  --radius-sm:8px;--radius:12px;--radius-lg:16px;--radius-xl:20px;
+  --nav-height:64px;--bottom-nav-height:72px;
+}
+html{height:100%;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,'Segoe UI',system-ui,Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:calc(var(--bottom-nav-height) + 16px);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.hide{display:none!important}
+
+/* UTILITY */
+.gradient-text{background:linear-gradient(135deg,var(--green-600),var(--green-800));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.card{background:var(--surface);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid var(--border);transition:box-shadow .2s}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.card-subtitle{font-size:13px;color:var(--text-secondary);margin-top:2px}
+
+/* NAV */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:var(--nav-height);display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(255,255,255,.92)}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand svg{flex-shrink:0}
+.nav-brand h1{font-size:19px;font-weight:800;background:linear-gradient(135deg,var(--green-600),var(--green-800));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-badge{background:var(--primary-light);color:var(--green-700);font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:auto;white-space:nowrap}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-btn{background:none;border:none;width:40px;height:40px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);transition:all .15s}
+.nav-btn:active{background:var(--slate-100);color:var(--text)}
+.nav-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--green-500),var(--green-700));color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;cursor:pointer;flex-shrink:0}
+
+/* CONTAINER */
+.container{max-width:480px;margin:0 auto;padding:16px}
+@media(min-width:640px){.container{max-width:640px;padding:20px}}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);position:relative;overflow:hidden}
+.stat-card .stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.stat-card .stat-value{font-size:26px;font-weight:800;line-height:1.1}
+.stat-card .stat-label{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.stat-card .stat-trend{font-size:11px;font-weight:600;margin-top:4px}
+.stat-card.green .stat-icon{background:var(--green-100);color:var(--green-600)}
+.stat-card.green .stat-value{color:var(--green-700)}
+.stat-card.amber .stat-icon{background:var(--amber-100);color:var(--amber-600)}
+.stat-card.amber .stat-value{color:var(--amber-600)}
+.stat-card.blue .stat-icon{background:var(--blue-100);color:var(--blue-600)}
+.stat-card.blue .stat-value{color:var(--blue-600)}
+.stat-card.red .stat-icon{background:var(--red-100);color:var(--red-600)}
+.stat-card.red .stat-value{color:var(--red-600)}
+
+/* QUICK ACTIONS */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.qa-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 12px;text-align:center;cursor:pointer;font-size:13px;font-weight:700;color:var(--text-secondary);transition:all .15s;box-shadow:var(--shadow-sm)}
+.qa-btn:active{transform:scale(.97);border-color:var(--green-500);color:var(--green-700);background:var(--green-50)}
+.qa-btn svg{display:block;margin:0 auto 6px;color:var(--green-600)}
+
+/* FLOCK CARD */
+.flock-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow-sm)}
+.flock-card:active{transform:scale(.98);border-color:var(--green-300);background:var(--green-50)}
+.flock-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.flock-card-name{font-size:16px;font-weight:700}
+.flock-card-status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.flock-card-status.active{background:var(--green-100);color:var(--green-700)}
+.flock-card-status.sold{background:var(--blue-100);color:var(--blue-600)}
+.flock-card-status.loss{background:var(--red-100);color:var(--red-600)}
+.flock-card-meta{display:flex;gap:16px;font-size:12px;color:var(--text-secondary);flex-wrap:wrap}
+.flock-card-meta span{display:flex;align-items:center;gap:4px}
+
+/* ICON SVG helpers */
+.icon-sm{width:16px;height:16px;display:inline-block;vertical-align:middle;flex-shrink:0}
+.icon-md{width:20px;height:20px}
+.icon-lg{width:24px;height:24px}
+.icon-inline{display:inline-flex;align-items:center;justify-content:center}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:var(--radius-sm);border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;width:100%;text-decoration:none;letter-spacing:-0.01em}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--green-600),var(--green-700));color:#fff;box-shadow:0 4px 12px rgba(5,150,105,.3)}
+.btn-primary:active{box-shadow:0 2px 6px rgba(5,150,105,.2)}
+.btn-secondary{background:var(--slate-100);color:var(--text)}
+.btn-secondary:active{background:var(--slate-200)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:active{background:var(--slate-100)}
+.btn-danger{background:var(--red-500);color:#fff}
+.btn-danger:active{background:var(--red-600)}
+.btn-sm{padding:8px 14px;font-size:13px;width:auto}
+.btn-xs{padding:4px 10px;font-size:11px;width:auto;border-radius:6px}
+.btn-row{display:flex;gap:10px;margin-top:16px}
+
+/* FORMS */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:var(--surface);transition:all .15s;color:var(--text)}
+.form-group input:focus,.form-group select:focus{border-color:var(--green-500);outline:none;box-shadow:0 0 0 3px rgba(16,185,129,.12)}
+.form-group textarea{resize:vertical;min-height:80px}
+
+/* LIST ITEMS */
+.list-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);gap:12px}
+.list-item:last-child{border-bottom:none}
+.list-item-left .primary{font-size:15px;font-weight:600}
+.list-item-left .secondary{font-size:12px;color:var(--text-secondary);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.list-item-right{text-align:right;white-space:nowrap;flex-shrink:0}
+.list-item-right .value{font-size:15px;font-weight:700}
+.list-item-right .sub{font-size:11px;color:var(--text-secondary)}
+
+/* TAG */
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.tag-sm{padding:2px 8px;font-size:10px}
+.tag-green{background:var(--green-100);color:var(--green-700)}
+.tag-blue{background:var(--blue-100);color:var(--blue-600)}
+.tag-red{background:var(--red-100);color:var(--red-600)}
+.tag-amber{background:var(--amber-100);color:var(--amber-600)}
+.tag-slate{background:var(--slate-100);color:var(--slate-600)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);display:flex;border-top:1px solid var(--border);z-index:100;padding:6px 0 calc(env(safe-area-inset-bottom,4px) + 6px) 0;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+.bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;background:none;border:none;font-size:10px;font-weight:600;color:var(--slate-400);cursor:pointer;transition:color .15s;position:relative}
+.bottom-nav button.active{color:var(--green-600)}
+.bottom-nav button .bn-icon{position:relative}
+.bottom-nav button .bn-icon svg{display:block}
+.bottom-nav button .bn-badge{position:absolute;top:-4px;right:-8px;background:var(--red-500);color:#fff;font-size:8px;font-weight:700;padding:1px 4px;border-radius:10px;min-width:14px;text-align:center}
+.bottom-nav button.active .bn-indicator{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:20px;height:3px;background:var(--green-500);border-radius:2px}
+.bottom-nav .bn-label{font-size:10px;font-weight:600}
+
+/* EMPTY STATE */
+.empty-state{padding:48px 24px;text-align:center}
+.empty-state .empty-icon{width:64px;height:64px;margin:0 auto 16px;background:var(--slate-100);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--slate-400)}
+.empty-state h3{font-size:17px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.empty-state p{font-size:14px;color:var(--text-secondary);margin-bottom:20px;line-height:1.5}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.overlay .modal{background:var(--surface);width:100%;max-width:480px;max-height:92vh;overflow-y:auto;border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:24px;animation:slideUp .3s cubic-bezier(.32,.72,0,1);box-shadow:0 -20px 60px rgba(0,0,0,.12)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--slate-300);border-radius:2px;margin:0 auto 16px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-head h2{font-size:20px;font-weight:800}
+.modal-close{background:none;border:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);transition:all .15s}
+.modal-close:active{background:var(--slate-100)}
+
+/* LOADING */
+.skeleton{background:linear-gradient(90deg,var(--slate-100) 25%,var(--slate-200) 50%,var(--slate-100) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius-sm)}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton-h1{height:32px;width:60%;margin-bottom:12px}
+.skeleton-h2{height:20px;width:40%;margin-bottom:16px}
+.skeleton-card{height:80px;margin-bottom:10px}
+.skeleton-stat{height:90px}
+
+/* TOAST */
+.toast-container{position:fixed;top:calc(var(--nav-height) + 12px);left:16px;right:16px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{pointer-events:auto;background:var(--slate-900);color:#fff;padding:14px 18px;border-radius:var(--radius);font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;animation:toastIn .3s cubic-bezier(.32,.72,0,1);max-width:480px;margin:0 auto;width:100%}
+.toast.success{background:var(--green-700)}
+.toast.error{background:var(--red-600)}
+.toast.warning{background:var(--amber-600)}
+@keyframes toastIn{from{opacity:0;transform:translateY(-12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* PAGE HEADER */
+.page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.page-head h2{font-size:20px;font-weight:800}
+.page-head .sub{font-size:13px;color:var(--text-secondary);margin-top:2px}
+
+/* SECTION */
+.section-title{font-size:15px;font-weight:700;margin-bottom:12px;color:var(--text);display:flex;align-items:center;gap:8px}
+
+/* AVATAR LIST */
+.avatar-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.avatar-item:last-child{border-bottom:none}
+.avatar-item .av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.avatar-item .av-info .name{font-size:15px;font-weight:600}
+.avatar-item .av-info .meta{font-size:12px;color:var(--text-secondary);margin-top:1px}
+.avatar-item .av-actions{margin-left:auto;display:flex;gap:6px}
+
+/* ROLE BADGE */
+.role-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.3px}
+.role-badge.admin{background:var(--green-100);color:var(--green-700)}
+.role-badge.employee{background:var(--blue-100);color:var(--blue-600)}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{background:var(--surface);border-radius:var(--radius-xl);padding:40px 28px 32px;width:100%;max-width:400px;box-shadow:var(--shadow-lg);border:1px solid var(--border)}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo .logo-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--green-500),var(--green-700));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 8px 24px rgba(5,150,105,.25)}
+.login-logo h1{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--green-600),var(--green-800));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-logo p{font-size:14px;color:var(--text-secondary);margin-top:4px}
+.login-error{background:var(--red-50);color:var(--red-600);font-size:13px;font-weight:600;padding:10px 14px;border-radius:var(--radius-sm);margin-bottom:16px;display:none;align-items:center;gap:8px}
+.login-input{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:16px;transition:all .15s;background:var(--slate-50);color:var(--text)}
+.login-input:focus{border-color:var(--green-500);outline:none;box-shadow:0 0 0 3px rgba(16,185,129,.1);background:var(--surface)}
+.login-input-wrap{position:relative;margin-bottom:14px}
+.login-input-wrap label{display:block;font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+
+/* RESPONSIVE */
+@media(min-width:640px){
+  .stats-grid{grid-template-columns:repeat(4,1fr)}
+  .quick-actions{grid-template-columns:repeat(4,1fr)}
+  body{padding-bottom:0}
+  .bottom-nav{display:none}
+  .container{padding-top:24px}
+}
+
+/* PULL TO REFRESH */
+.pull-indicator{text-align:center;padding:12px;color:var(--text-secondary);font-size:13px;display:none}
+
+/* BADGE DOT */
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot-green{background:var(--green-500)}
+.dot-red{background:var(--red-500)}
+.dot-amber{background:var(--amber-500)}
+
+/* PRINT STYLES */
+@media print {
+  body{padding:0!important;background:#fff}
+  .nav,.bottom-nav,.quick-actions,.stats-grid,.btn-row,.btn,.qa-btn,.nav-btn{display:none!important}
+  .card{border:1px solid #ddd!important;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid}
+  .container{max-width:100%!important;padding:0!important}
+  .page-head h2{font-size:24px!important}
+  .stat-card{border:1px solid #ddd!important;box-shadow:none!important;padding:12px!important}
+  .stat-card .stat-value{font-size:20px!important}
+  .flock-card{border:1px solid #ddd!important;box-shadow:none!important}
+  #loginScreen,#modalContainer,.toast-container{display:none!important}
+  #app{display:block!important}
+  .empty-state{display:none!important}
+  .report-row{font-size:13px!important;padding:4px 0!important}
+  @page{margin:1.5cm}
+}
+
+/* EMPLOYEE RESTRICTED BANNER */
+.restricted-banner{background:var(--blue-50);border:1px solid var(--blue-100);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--blue-700);font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:16px}
+
+/* REPORTS TABLE */
+.report-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:14px}
+.report-row .r-label{color:var(--text-secondary)}
+.report-row .r-value{font-weight:700}
+.report-row.total{padding:10px 0 0;margin-top:6px;border-top:2px solid var(--border);font-size:15px}
+.report-row.total .r-value{font-size:17px}
+
+/* USER LIST CARD */
+.user-card{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;transition:all .15s}
+.user-card:active{background:var(--slate-50)}
+.user-card .uc-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.user-card .uc-info{flex:1}
+.user-card .uc-info .uc-name{font-size:15px;font-weight:700}
+.user-card .uc-info .uc-meta{font-size:12px;color:var(--text-secondary);margin-top:1px}
+.user-card .uc-actions{display:flex;gap:6px}
+</style>
+</head>
+<body>
+<!-- SPLASH SCREEN -->
+<div id="splash" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(145deg,#065f46,#0a1628);transition:opacity .5s ease,transform .5s ease">
+  <div style="width:80px;height:80px;background:rgba(255,255,255,.12);border-radius:24px;display:flex;align-items:center;justify-content:center;animation:splashPulse 1.5s ease-in-out infinite;backdrop-filter:blur(4px)">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17c2-2 2-6 0-8-1-1-3-1-4 0l-3 3"/><path d="M5 7c-2 2-2 6 0 8 1 1 3 1 4 0l3-3"/><path d="M12 12c-1 1-1 3 0 4s3 1 4 0"/><path d="M12 12c1-1 1-3 0-4s-3-1-4 0"/></svg>
+  </div>
+  <div style="margin-top:24px;font-size:24px;font-weight:800;color:#fff;letter-spacing:-.5px">PoultryERP</div>
+  <div style="margin-top:6px;font-size:14px;color:rgba(255,255,255,.55);font-weight:400">Farm Management</div>
+  <div style="margin-top:48px;width:120px;height:3px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden">
+    <div style="width:36%;height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:4px;animation:splashLoad 1.2s ease-in-out infinite"></div>
+  </div>
+</div>
+<style>
+@keyframes splashPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes splashLoad{0%{transform:translateX(-100%)}100%{transform:translateX(320%)}}
+#splash.hide-splash{opacity:0;transform:scale(1.04);pointer-events:none}
+</style>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17c2-1 3-3 3-6 0-4-3-7-7-7-1 0-2 .2-3 .5"/><path d="M3 12c0-5 4-9 9-9s9 4 9 9-4 9-9 9"/><path d="M12 3v18"/><path d="M8 12h8"/><path d="m9 15 3 3 3-3"/></svg>
+      </div>
+      <h1>PoultryERP</h1>
+      <p>Farm management system</p>
+    </div>
+    <div class="login-error" id="loginError">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+      <span id="loginErrorMsg">Invalid credentials</span>
+    </div>
+    <div class="login-input-wrap"><label>Username</label><input class="login-input" id="loginUser" type="text" value="admin" placeholder="Enter username" autocomplete="username"></div>
+    <div class="login-input-wrap"><label>Passcode</label><input class="login-input" id="loginPass" type="password" placeholder="Enter passcode" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-primary" onclick="doLogin()" id="loginBtn"><span id="loginBtnText">Sign In</span></button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="nav" id="mainNav" style="display:none">
+  <div class="nav-brand">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green-600)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17c2-1 3-3 3-6 0-4-3-7-7-7-1 0-2 .2-3 .5"/><path d="M3 12c0-5 4-9 9-9s9 4 9 9-4 9-9 9"/><path d="M12 3v18"/></svg>
+    <h1>PoultryERP</h1>
+  </div>
+  <span class="nav-badge" id="activeFlockBadge">0 flocks</span>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="refreshData()" title="Refresh">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+    </button>
+    <div class="nav-avatar" id="navAvatar" onclick="showSettings()">M</div>
+  </div>
+</div>
+
+<div class="container" id="app" style="display:none"></div>
+
+<div class="bottom-nav" id="bottomNav" style="display:none"></div>
+
+<div id="modalContainer"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ======================== SVG ICONS ========================
+const I = {
+  home:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  flock:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17c2-1 3-3 3-6 0-4-3-7-7-7-1 0-2 .2-3 .5"/><path d="M3 12c0-5 4-9 9-9s9 4 9 9-4 9-9 9"/><path d="M12 3v18"/></svg>',
+  feed:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"/><path d="M3 22V8c0-2 1-4 3-4h12c2 0 3 2 3 4v14"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>',
+  finance:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+  report:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>',
+  team:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  plus:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>',
+  egg:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-5 0-8-4-8-9 0-5 3.5-11 8-11s8 6 8 11c0 5-3 9-8 9z"/></svg>',
+  dead:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>',
+  bird:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7a4 4 0 0 1-8 0c0-2 1-4 4-4s4 2 4 4Z"/><path d="M8 7c0 3-2 4-4 4"/><path d="M16 7c0 3 2 4 4 4"/><path d="M12 11v8"/><path d="M8 19h8"/></svg>',
+  settings:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2"/><path d="M12 21v2"/><path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/><path d="M1 12h2"/><path d="M21 12h2"/><path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/></svg>',
+  logout:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><path d="M21 12H9"/></svg>',
+  user:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  refresh:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>',
+  check:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  x:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6 18 18"/></svg>',
+  alert:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+  feedIcon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"/><path d="M3 22V8c0-2 1-4 3-4h12c2 0 3 2 3 4v14"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>',
+  arrowUp:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>',
+  arrowDown:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+  syringe:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8 20a2 2 0 0 1-3-3L16 6"/><path d="M6 18l-4 4"/><path d="m10 14-2 2"/></svg>',
+  calendar:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
+  download:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><path d="M12 15V3"/></svg>',
+  print:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>',
+  checkbox:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+};
+
+// ======================== API LAYER ========================
+const API = {
+  _token: localStorage.getItem('poultry_token') || null,
+  _base: '',
+  async req(method, path, body) {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (this._token) opts.headers['Authorization'] = 'Bearer ' + this._token;
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(this._base + path, opts);
+    if (res.status === 401) { this._logout(); throw new Error('Session expired'); }
+    if (res.status === 403) { throw new Error('Access denied'); }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  },
+  get(p) { return this.req('GET', p); },
+  post(p, b) { return this.req('POST', p, b); },
+  put(p, b) { return this.req('PUT', p, b); },
+  async login(user, pass) {
+    const data = await this.req('POST', '/api/login', { username: user, password: pass });
+    this._token = data.token;
+    localStorage.setItem('poultry_token', data.token);
+    return data;
+  },
+  _logout() { this._token = null; localStorage.removeItem('poultry_token'); }
+};
+
+// ======================== STATE ========================
+let currentUser = null;
+let currentPage = 'dashboard';
+let cache = { flocks: [], records: [], feeds: [], sales: [], expenses: [], users: [], health: [] };
+let isLoading = false;
+
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function today() { return new Date().toISOString().slice(0, 10); }
+function money(n) { return 'UGX ' + Number(n || 0).toLocaleString(); }
+function dateFmt(d) { if (!d) return ''; const dt = new Date(d + 'T00:00:00'); return dt.toLocaleDateString('en-UG', { day: '2-digit', month: 'short', year: 'numeric' }); }
+function initials(name) { return (name || 'U').charAt(0).toUpperCase(); }
+
+// ======================== TOAST ========================
+function toast(msg, type) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type || '');
+  t.innerHTML = `<span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 2800);
+}
+
+// ======================== AUTH ========================
+async function doLogin() {
+  const btn = document.getElementById('loginBtn'); const txt = document.getElementById('loginBtnText');
+  btn.disabled = true; txt.textContent = 'Signing in...';
+  document.getElementById('loginError').style.display = 'none';
+  try {
+    const u = await API.login(document.getElementById('loginUser').value.trim(), document.getElementById('loginPass').value);
+    currentUser = u;
+    hideLogin();
+    await loadAll();
+    renderPage();
+  } catch (e) {
+    document.getElementById('loginErrorMsg').textContent = e.message || 'Invalid credentials';
+    document.getElementById('loginError').style.display = 'flex';
+  }
+  btn.disabled = false; txt.textContent = 'Sign In';
+}
+
+function showLogin() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('mainNav').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('bottomNav').style.display = 'none';
+}
+
+function hideLogin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainNav').style.display = 'flex';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('bottomNav').style.display = 'flex';
+  document.getElementById('navAvatar').textContent = initials(currentUser?.displayName);
+}
+
+function doLogout() {
+  API._logout(); currentUser = null;
+  cache = { flocks: [], records: [], feeds: [], sales: [], expenses: [], users: [] };
+  showLogin();
+}
+
+// ======================== DATA LOADING ========================
+async function loadAll() {
+  isLoading = true;
+  try {
+    const calls = [
+      API.get('/api/flocks'), API.get('/api/records'), API.get('/api/feeds'), API.get('/api/health')
+    ];
+    if (currentUser?.role === 'admin') {
+      calls.push(API.get('/api/sales'), API.get('/api/expenses'), API.get('/api/users'));
+    }
+    const [flocks, records, feeds, health, sales, expenses, users] = await Promise.all(calls);
+    cache.flocks = flocks; cache.records = records; cache.feeds = feeds; cache.health = health || [];
+    if (currentUser?.role === 'admin') { cache.sales = sales || []; cache.expenses = expenses || []; cache.users = users || []; }
+  } catch (e) { toast(e.message, 'error'); }
+  isLoading = false;
+}
+
+async function refreshData() {
+  await loadAll(); renderPage(); toast('Data refreshed', 'success');
+}
+
+// ======================== PAGES ========================
+const PAGE_ICONS = { dashboard:I.home, flocks:I.flock, feed:I.feedIcon, finance:I.finance, reports:I.report, team:I.team };
+
+function showPage(name) {
+  currentPage = name;
+  const nav = document.getElementById('bottomNav');
+  nav.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+  renderPage();
+}
+
+function buildBottomNav() {
+  const isAdmin = currentUser?.role === 'admin';
+  const pages = [
+    { id:'dashboard', label:'Home', icon:I.home },
+    { id:'flocks', label:'Flocks', icon:I.flock },
+    { id:'feed', label:'Feed', icon:I.feedIcon },
+    { id:'health', label:'Health', icon:I.syringe },
+  ];
+  if (isAdmin) pages.push({ id:'finance', label:'Finance', icon:I.finance });
+  if (isAdmin) pages.push({ id:'reports', label:'Reports', icon:I.report });
+  if (isAdmin) pages.push({ id:'team', label:'Team', icon:I.team });
+  
+  const nav = document.getElementById('bottomNav');
+  nav.innerHTML = pages.map(p => `
+    <button data-page="${p.id}" onclick="showPage('${p.id}')" class="${p.id===currentPage?'active':''}">
+      <span class="bn-icon">${p.icon}</span>
+      <span class="bn-label">${p.label}</span>
+    </button>`).join('');
+}
+
+async function renderPage() {
+  if (!currentUser) return;
+  buildBottomNav();
+  document.getElementById('activeFlockBadge').textContent = cache.flocks.filter(f=>f.status==='active').length + ' active';
+  const el = document.getElementById('app');
+  try {
+    switch (currentPage) {
+      case 'dashboard': el.innerHTML = renderDashboard(); break;
+      case 'flocks': el.innerHTML = renderFlocks(); break;
+      case 'feed': el.innerHTML = renderFeed(); break;
+      case 'health': el.innerHTML = renderHealth(); break;
+      case 'finance': el.innerHTML = currentUser.role === 'admin' ? renderFinance() : restrictedPage(); break;
+      case 'reports': el.innerHTML = currentUser.role === 'admin' ? renderReports() : restrictedPage(); break;
+      case 'team': el.innerHTML = currentUser.role === 'admin' ? renderTeam() : restrictedPage(); break;
+      default: el.innerHTML = renderDashboard();
+    }
+  } catch (e) { el.innerHTML = '<div class="empty-state"><p>Error loading page</p></div>'; }
+}
+
+function restrictedPage() {
+  return `<div class="empty-state">
+    <div class="empty-icon">${I.alert}</div>
+    <h3>Access Restricted</h3>
+    <p>This section is only available to the Farm Manager.</p>
+  </div>`;
+}
+
+// ======================== DASHBOARD ========================
+function renderDashboard() {
+  const { flocks, records, sales, expenses, feeds } = cache;
+  const active = flocks.filter(f => f.status === 'active');
+  const totalBirds = active.reduce((s, f) => s + Number(f.quantity), 0);
+  const isAdmin = currentUser?.role === 'admin';
+  
+  // For employees, only show THEIR records
+  const relevantRecords = isAdmin ? records : records.filter(r => r.created_by_id === currentUser?.id);
+  const totalDead = relevantRecords.reduce((s, r) => s + Number(r.dead || 0), 0);
+  const totalEggs = relevantRecords.reduce((s, r) => s + Number(r.eggs || 0), 0);
+  const totalSales = isAdmin ? sales.reduce((s, r) => s + Number(r.amount || 0), 0) : 0;
+  const totalExp = isAdmin ? expenses.reduce((s, r) => s + Number(r.amount || 0), 0) + feeds.reduce((s, r) => s + Number(r.cost || 0), 0) : 0;
+  const profit = totalSales - totalExp;
+
+  let flockCards = active.map(f => {
+    const recs = records.filter(r => r.flock_id === f.id);
+    const dead = recs.reduce((s, r) => s + Number(r.dead || 0), 0);
+    const eggs = recs.reduce((s, r) => s + Number(r.eggs || 0), 0);
+    const remaining = Number(f.quantity) - dead;
+    const days = Math.floor((new Date() - new Date(f.date + 'T00:00:00')) / 86400000);
+    return `<div class="flock-card" onclick="showPage('flocks')">
+      <div class="flock-card-top">
+        <span class="flock-card-name">${f.name}</span>
+        <span class="flock-card-status active">${remaining} birds</span>
+      </div>
+      <div class="flock-card-meta">
+        <span>${I.bird} ${f.breed}</span>
+        <span>${I.egg} ${eggs} eggs</span>
+        <span>${I.dead} ${dead} lost</span>
+        <span>&#128197; ${days}d</span>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="empty-icon">' + I.flock + '</div><h3>No active flocks</h3><p>Start by creating your first flock</p><button class="btn btn-primary btn-sm" onclick="showModal(\'addFlock\')">+ New Flock</button></div>';
+
+  return `
+    <div class="stats-grid">
+      <div class="stat-card green">
+        <div class="stat-icon">${I.bird}</div>
+        <div class="stat-value">${totalBirds}</div>
+        <div class="stat-label">Active Birds</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-icon">${I.egg}</div>
+        <div class="stat-value">${totalEggs}</div>
+        <div class="stat-label">Eggs Collected</div>
+      </div>
+      ${isAdmin ? `
+      <div class="stat-card blue">
+        <div class="stat-icon">${I.finance}</div>
+        <div class="stat-value">${money(totalSales)}</div>
+        <div class="stat-label">Revenue</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon">${I.dead}</div>
+        <div class="stat-value">${totalDead}</div>
+        <div class="stat-label">Mortality</div>
+      </div>` : `
+      <div class="stat-card blue">
+        <div class="stat-icon">${I.team}</div>
+        <div class="stat-value">${totalDead}</div>
+        <div class="stat-label">Mortality</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon">${I.feedIcon}</div>
+        <div class="stat-value">${relevantRecords.reduce((s,r)=>s+Number(r.feed||0),0)} kg</div>
+        <div class="stat-label">Feed Recorded</div>
+      </div>`}
+    </div>
+
+    <div class="quick-actions">
+      <div class="qa-btn" onclick="showModal('addFlock')">${I.plus}<span style="font-size:12px">New Flock</span></div>
+      <div class="qa-btn" onclick="showModal('addRecord')">${I.egg}<span style="font-size:12px">Daily Record</span></div>
+      ${isAdmin ? `<div class="qa-btn" onclick="showModal('addSale')">${I.finance}<span style="font-size:12px">Record Sale</span></div>
+      <div class="qa-btn" onclick="showModal('addExpense')">${I.x}<span style="font-size:12px">Add Expense</span></div>` : `<div class="qa-btn" onclick="showModal('addFeed')">${I.feedIcon}<span style="font-size:12px">Log Feed</span></div>
+      <div class="qa-btn" onclick="showPage('feed')">${I.report}<span style="font-size:12px">View Feed</span></div>`}
+    </div>
+
+    ${!isAdmin ? '<div class="restricted-banner">' + I.user + ' You are logged in as <strong>' + currentUser.displayName + '</strong> (Employee). Record daily data below.</div>' : ''}
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">${I.flock} Active Flocks</span></div>
+      ${flockCards}
+    </div>
+    ${isAdmin ? `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">${I.finance} Financial Summary</span>
+      </div>
+      <div class="report-row"><span class="r-label">Total Revenue</span><span class="r-value" style="color:var(--green-600)">${money(totalSales)}</span></div>
+      <div class="report-row"><span class="r-label">Total Costs</span><span class="r-value" style="color:var(--red-600)">${money(totalExp)}</span></div>
+      <div class="report-row total"><span class="r-label">Net Profit</span><span class="r-value" style="color:${profit>=0?'var(--green-600)':'var(--red-600)'}">${money(profit)}</span></div>
+      <div class="report-row"><span class="r-label">Margin</span><span class="r-value">${totalSales>0 ? Math.round((profit/totalSales)*100)+'%' : '0%'}</span></div>
+    </div>` : ''}
+  `;
+}
+
+// ======================== FLOCKS ========================
+function renderFlocks() {
+  const isAdmin = currentUser?.role === 'admin';
+  const list = cache.flocks.map(f => {
+    const recs = cache.records.filter(r => r.flock_id === f.id);
+    const dead = recs.reduce((s, r) => s + Number(r.dead || 0), 0);
+    const eggs = recs.reduce((s, r) => s + Number(r.eggs || 0), 0);
+    const remaining = Number(f.quantity) - dead;
+    const days = Math.floor((new Date() - new Date(f.date + 'T00:00:00')) / 86400000) || 0;
+    const sClass = f.status === 'active' ? 'tag-green' : f.status === 'sold' ? 'tag-blue' : 'tag-red';
+    return `<div class="flock-card">
+      <div class="flock-card-top">
+        <span class="flock-card-name">${f.name}</span>
+        <span class="tag ${sClass}">${f.status}</span>
+      </div>
+      <div class="flock-card-meta" style="margin-bottom:10px">
+        <span>${I.bird} ${f.breed}</span>
+        <span>&#128197; ${dateFmt(f.date)} (${days}d)</span>
+        <span>${remaining}/${f.quantity}</span>
+        <span>${I.egg} ${eggs}</span>
+      </div>
+      ${isAdmin ? `<div style="display:flex;gap:6px">
+        <button class="btn btn-secondary btn-xs" onclick="editFlock('${f.id}')">Edit</button>
+        ${f.status==='active' ? `<button class="btn btn-outline btn-xs" onclick="closeFlock('${f.id}')">Close</button>` : ''}
+      </div>` : `<div style="font-size:11px;color:var(--text-secondary)">Created by ${f.created_by||'N/A'}</div>`}
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="empty-icon">' + I.flock + '</div><h3>No flocks</h3><p>Create your first flock to get started</p>' + (isAdmin?'<button class="btn btn-primary btn-sm" onclick="showModal(\'addFlock\')">+ New Flock</button>':'') + '</div>';
+
+  return `
+    <div class="page-head"><div><h2>Flocks</h2><div class="sub">${cache.flocks.length} total flocks</div></div>${isAdmin?'<button class="btn btn-primary btn-sm" onclick="showModal(\'addFlock\')">+ New</button>':''}</div>
+    <div class="card" style="padding:16px">${list}</div>`;
+}
+
+// ======================== FEED ========================
+function renderFeed() {
+  const { feeds, records } = cache;
+  const totalBought = feeds.reduce((s, r) => s + Number(r.quantity || 0), 0);
+  const totalUsed = records.reduce((s, r) => s + Number(r.feed || 0), 0);
+  const totalCost = feeds.reduce((s, r) => s + Number(r.cost || 0), 0);
+  const remaining = totalBought - totalUsed;
+  const isAdmin = currentUser?.role === 'admin';
+
+  const list = [...feeds].reverse().slice(0, 30).map(f => {
+    const fl = cache.flocks.find(x => x.id === f.flock_id);
+    return `<div class="list-item">
+      <div class="list-item-left">
+        <div class="primary">${f.type} (${f.quantity} kg)</div>
+        <div class="secondary">${fl?fl.name:'N/A'} &middot; ${dateFmt(f.date)}${isAdmin?' &middot; '+money(f.cost):''}</div>
+      </div>
+      <div class="list-item-right">
+        ${isAdmin ? `<div class="value">${money(f.cost)}</div><div class="sub">${(Number(f.cost)/Number(f.quantity)).toFixed(0)||0}/kg</div>` : `<div class="value">${f.quantity} kg</div>`}
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="empty-icon">' + I.feedIcon + '</div><h3>No feed purchases</h3><p>Record feed purchases to track inventory</p></div>';
+
+  return `
+    <div class="stats-grid">
+      <div class="stat-card green"><div class="stat-icon">${I.arrowUp}</div><div class="stat-value">${totalBought} kg</div><div class="stat-label">Feed Bought</div></div>
+      <div class="stat-card amber"><div class="stat-icon">${I.arrowDown}</div><div class="stat-value">${totalUsed} kg</div><div class="stat-label">Feed Used</div></div>
+      <div class="stat-card blue"><div class="stat-icon">${I.feedIcon}</div><div class="stat-value">${Math.max(0,remaining)} kg</div><div class="stat-label">Remaining</div></div>
+      ${isAdmin ? `<div class="stat-card red"><div class="stat-icon">${I.finance}</div><div class="stat-value">${money(totalCost)}</div><div class="stat-label">Total Cost</div></div>` : `<div class="stat-card red"><div class="stat-icon">${I.feedIcon}</div><div class="stat-value">${feeds.length}</div><div class="stat-label">Purchases</div></div>`}
+    </div>
+    <div class="page-head"><div><h2>Feed Inventory</h2><div class="sub">${feeds.length} purchases</div></div>${isAdmin?'<button class="btn btn-primary btn-sm" onclick="showModal(\'addFeed\')">+ Add</button>':''}</div>
+    <div class="card" style="padding:16px">${list}</div>`;
+}
+
+// ======================== FINANCE ========================
+function renderFinance() {
+  const { sales, expenses, feeds } = cache;
+  const feedCost = feeds.reduce((s, r) => s + Number(r.cost || 0), 0);
+  const totalSales = sales.reduce((s, r) => s + Number(r.amount || 0), 0);
+  const totalExp = expenses.reduce((s, r) => s + Number(r.amount || 0), 0) + feedCost;
+  const profit = totalSales - totalExp;
+
+  const salesList = [...sales].reverse().slice(0, 30).map(s => {
+    const f = cache.flocks.find(x => x.id === s.flock_id);
+    return `<div class="list-item">
+      <div class="list-item-left"><div class="primary">${s.type} ${s.avgWeight?'('+s.avgWeight+'kg/bird)':''}</div><div class="secondary">${f?f.name:'N/A'} &middot; ${dateFmt(s.date)}${s.buyer?' &middot; '+s.buyer:''}</div></div>
+      <div class="list-item-right"><div class="value" style="color:var(--green-600)">${money(s.amount)}</div><div class="sub">${s.qty>1?s.qty+' x '+money(s.price):''}</div></div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="empty-icon">' + I.finance + '</div><h3>No sales recorded</h3></div>';
+
+  const expList = [...expenses].reverse().slice(0, 30).map(e => {
+    const f = cache.flocks.find(x => x.id === e.flock_id);
+    return `<div class="list-item">
+      <div class="list-item-left"><div class="primary">${e.category}</div><div class="secondary">${f?f.name:'N/A'} &middot; ${dateFmt(e.date)}</div></div>
+      <div class="list-item-right"><div class="value" style="color:var(--red-500)">-${money(e.amount)}</div></div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="empty-icon">' + I.x + '</div><h3>No expenses</h3></div>';
+
+  return `
+    <div class="stats-grid">
+      <div class="stat-card green"><div class="stat-icon">${I.arrowUp}</div><div class="stat-value">${money(totalSales)}</div><div class="stat-label">Revenue</div></div>
+      <div class="stat-card red"><div class="stat-icon">${I.arrowDown}</div><div class="stat-value">${money(totalExp)}</div><div class="stat-label">Costs</div></div>
+      <div class="stat-card ${profit>=0?'green':'red'}"><div class="stat-icon">${I.finance}</div><div class="stat-value">${money(profit)}</div><div class="stat-label">Profit/Loss</div></div>
+      <div class="stat-card blue"><div class="stat-icon">${I.report}</div><div class="stat-value">${totalSales>0 ? Math.round((profit/totalSales)*100)+'%' : '0%'}</div><div class="stat-label">Margin</div></div>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">${I.finance} Sales</span><button class="btn btn-primary btn-sm" onclick="showModal('addSale')">+ Add</button></div>${salesList}</div>
+    <div class="card"><div class="card-header"><span class="card-title">${I.x} Expenses</span><button class="btn btn-primary btn-sm" onclick="showModal('addExpense')">+ Add</button></div>${expList}</div>`;
+}
+
+// ======================== REPORTS ========================
+function renderReports() {
+  const { flocks, records, sales, expenses, feeds } = cache;
+  const cards = flocks.map(f => {
+    const recs = records.filter(r => r.flock_id === f.id);
+    const dead = recs.reduce((s, r) => s + Number(r.dead || 0), 0);
+    const eggs = recs.reduce((s, r) => s + Number(r.eggs || 0), 0);
+    const feedUsed = recs.reduce((s, r) => s + Number(r.feed || 0), 0);
+    const fSales = sales.filter(s => s.flock_id === f.id).reduce((s, r) => s + Number(r.amount || 0), 0);
+    const fExp = expenses.filter(e => e.flock_id === f.id).reduce((s, r) => s + Number(r.amount || 0), 0);
+    const fFeedCost = feeds.filter(e => e.flock_id === f.id).reduce((s, r) => s + Number(r.cost || 0), 0);
+    const totalCost = fExp + fFeedCost;
+    const profit = fSales - totalCost;
+    const mortalityRate = Number(f.quantity) > 0 ? ((dead / Number(f.quantity)) * 100).toFixed(1) : 0;
+    const days = Math.floor((new Date() - new Date(f.date + 'T00:00:00')) / 86400000) || 0;
+    const duration = f.status === 'active' ? days + ' days (active)' : days + ' days (closed)';
+
+    // FCR calculation
+    const birdSales = sales.filter(s => s.flock_id === f.id && (s.type === 'Live Bird' || s.type === 'Dressed Bird') && s.avgWeight);
+    const totalWeight = birdSales.reduce((s, r) => s + (Number(r.qty) * Number(r.avgWeight)), 0);
+    const fcr = totalWeight > 0 && feedUsed > 0 ? (feedUsed / totalWeight).toFixed(2) : null;
+
+    return `<div class="card">
+      <div class="card-header">
+        <div><div class="card-title">${f.name}</div><div class="card-subtitle">${f.breed} &middot; ${duration}</div></div>
+        <span class="tag ${f.status==='active'?'tag-green':f.status==='sold'?'tag-blue':'tag-red'}">${f.status}</span>
+      </div>
+      <div class="report-row"><span class="r-label">Initial Stock</span><span class="r-value">${f.quantity}</span></div>
+      <div class="report-row"><span class="r-label">Mortality</span><span class="r-value">${dead} (${mortalityRate}%)</span></div>
+      <div class="report-row"><span class="r-label">Surviving</span><span class="r-value" style="color:var(--green-600)">${Number(f.quantity)-dead}</span></div>
+      <div class="report-row"><span class="r-label">Eggs Collected</span><span class="r-value">${eggs}</span></div>
+      <div class="report-row"><span class="r-label">Feed Used</span><span class="r-value">${feedUsed} kg</span></div>
+      ${fcr ? `<div class="report-row"><span class="r-label">FCR (Feed Conv. Ratio)</span><span class="r-value" style="color:${fcr<2?'var(--green-600)':fcr<2.5?'var(--amber-600)':'var(--red-600)'}">${fcr}</span></div>` : ''}
+      <div class="report-row"><span class="r-label">Revenue</span><span class="r-value" style="color:var(--green-600)">${money(fSales)}</span></div>
+      <div class="report-row"><span class="r-label">Costs</span><span class="r-value" style="color:var(--red-500)">${money(totalCost)}</span></div>
+      <div class="report-row total"><span class="r-label">Net Profit</span><span class="r-value" style="color:${profit>=0?'var(--green-600)':'var(--red-500)'}">${money(profit)}</span></div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="empty-icon">' + I.report + '</div><h3>No data</h3><p>Start a flock and add records to see reports</p></div>';
+
+  return `
+    <div class="page-head"><h2>Flock Reports</h2></div>
+    ${cards}
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="exportData()">${I.download} Export JSON</button>
+      <button class="btn btn-primary" onclick="window.print()">${I.print} Print PDF</button>
+    </div>`;
+}
+
+// ======================== HEALTH ========================
+function renderHealth() {
+  const { health, flocks } = cache;
+  const isAdmin = currentUser?.role === 'admin';
+
+  const now = new Date().toISOString().slice(0, 10);
+  const totalDue = (health||[]).filter(h => h.next_due_date && h.next_due_date <= now && !h.completed).length;
+  const totalDone = (health||[]).filter(h => h.completed).length;
+
+  const list = [...(health||[])].reverse().map(h => {
+    const fl = flocks.find(x => x.id === h.flock_id);
+    const dueStr = h.next_due_date ? ', next: ' + dateFmt(h.next_due_date) : '';
+    const isOverdue = h.next_due_date && h.next_due_date <= now && !h.completed;
+    return `<div class="list-item">
+      <div class="list-item-left">
+        <div class="primary" style="display:flex;align-items:center;gap:8px">
+          ${h.completed ? '<span style="color:var(--green-500)">' + I.check + '</span>' : (isOverdue ? '<span style="color:var(--red-500)">' + I.alert + '</span>' : '<span style="color:var(--amber-500)">' + I.syringe + '</span>')}
+          ${h.name}
+        </div>
+        <div class="secondary">${h.type} &middot; ${fl?fl.name:'N/A'} &middot; ${dateFmt(h.date)}${dueStr}</div>
+      </div>
+      <div class="list-item-right">
+        ${!h.completed && isAdmin ? `<button class="btn btn-outline btn-xs" onclick="completeHealth('${h.id}')">Done</button>` : (h.completed ? '<span class="tag tag-green">Done</span>' : '<span class="tag tag-amber">Pending</span>')}
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="empty-icon">' + I.syringe + '</div><h3>No health records</h3><p>Log vaccinations and medications here</p></div>';
+
+  return `
+    <div class="stats-grid">
+      <div class="stat-card green"><div class="stat-icon">${I.checkbox}</div><div class="stat-value">${totalDone}</div><div class="stat-label">Completed</div></div>
+      <div class="stat-card red"><div class="stat-icon">${I.alert}</div><div class="stat-value">${totalDue}</div><div class="stat-label">Overdue</div></div>
+      <div class="stat-card blue"><div class="stat-icon">${I.syringe}</div><div class="stat-value">${(health||[]).length}</div><div class="stat-label">Total Records</div></div>
+      <div class="stat-card amber"><div class="stat-icon">${I.calendar}</div><div class="stat-value">${(health||[]).filter(h=>!h.completed).length}</div><div class="stat-label">Pending</div></div>
+    </div>
+    <div class="page-head"><div><h2>Health Schedule</h2></div>${isAdmin?'<button class="btn btn-primary btn-sm" onclick="showModal(\'addHealth\')">+ Record</button>':''}</div>
+    <div class="card" style="padding:16px">${list}</div>`;
+}
+
+// ======================== TEAM (admin only) ========================
+function renderTeam() {
+  const users = cache.users || [];
+  const list = users.map(u => {
+    const colors = ['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
+    const ci = users.indexOf(u) % colors.length;
+    return `<div class="user-card">
+      <div class="uc-av" style="background:${colors[ci]}">${initials(u.displayName||u.username)}</div>
+      <div class="uc-info">
+        <div class="uc-name">${u.displayName||u.username}</div>
+        <div class="uc-meta">${u.username} &middot; <span class="role-badge ${u.role}">${u.role}</span>${!u.isActive?' &middot; <span style="color:var(--red-500)">Deactivated</span>':''}</div>
+      </div>
+      <div class="uc-actions">
+        <button class="btn btn-outline btn-xs" onclick="editUser('${u.id}')">Edit</button>
+        ${u.username!=='admin'?`<button class="btn btn-danger btn-xs" onclick="toggleUser('${u.id}')">${u.isActive?'Deact.':'Activate'}</button>`:''}
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="empty-icon">' + I.team + '</div><h3>No team members</h3></div>';
+
+  return `
+    <div class="page-head"><div><h2>Team</h2><div class="sub">${users.length} member(s)</div></div><button class="btn btn-primary btn-sm" onclick="showModal('addUser')">+ Add</button></div>
+    <div class="card" style="padding:16px">${list}</div>
+    ${currentUser?.role === 'admin' ? `<div class="card"><div class="card-header"><span class="card-title">${I.settings} Account</span></div>
+      <button class="btn btn-outline btn-sm" onclick="showSettings()" style="margin-bottom:8px">${I.settings} Change Passcode</button>
+      <button class="btn btn-secondary btn-sm" onclick="doLogout()">${I.logout} Sign Out</button>
+    </div>` : ''}`;
+}
+
+// ======================== MODALS ========================
+function showModal(type, data) {
+  const c = document.getElementById('modalContainer');
+  let html = '<div class="overlay" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()">';
+  html += '<div class="modal-handle"></div>';
+  switch (type) {
+    case 'addFlock': html += flockForm(data, false); break;
+    case 'editFlock': html += flockForm(data, true); break;
+    case 'closeFlock': html += closeFlockForm(data); break;
+    case 'addRecord': html += recordForm(); break;
+    case 'addSale': html += saleForm(); break;
+    case 'addExpense': html += expenseForm(); break;
+    case 'addFeed': html += feedForm(); break;
+    case 'addHealth': html += healthForm(); break;
+    case 'addUser': html += userForm(); break;
+    case 'editUser': html += userForm(data); break;
+    case 'settings': html += settingsForm(); break;
+  }
+  html += '</div></div>';
+  c.innerHTML = html;
+}
+
+function closeModal() { document.getElementById('modalContainer').innerHTML = ''; }
+
+function activeFlockOpts() {
+  return cache.flocks.filter(f=>f.status==='active')
+    .map(f => `<option value="${f.id}">${f.name}</option>`).join('') || '<option value="">No active flocks</option>';
+}
+
+function modalHead(title) {
+  return `<div class="modal-head"><h2>${title}</h2><button class="modal-close" onclick="closeModal()">${I.x}</button></div>`;
+}
+
+function flockForm(f, edit) {
+  f = f || {};
+  return modalHead(edit?'Edit Flock':'New Flock') + `
+    <div class="form-group"><label>Flock Name</label><input id="f_name" value="${f.name||''}" placeholder="e.g. Batch 1"></div>
+    <div class="form-group"><label>Breed</label><select id="f_breed">${['Broiler','Layer','Kuroiler','Indigenous','Other'].map(b => `<option ${f.breed===b?'selected':''}>${b}</option>`).join('')}</select></div>
+    <div class="form-group"><label>Quantity</label><input id="f_qty" type="number" value="${f.quantity||''}" placeholder="Number of chicks"></div>
+    <div class="form-group"><label>Start Date</label><input id="f_date" type="date" value="${f.date||today()}"></div>
+    <div class="form-group"><label>Notes</label><textarea id="f_notes" rows="2">${f.notes||''}</textarea></div>
+    <button class="btn btn-primary" onclick="${edit?`editFlockSubmit('${f.id}')`:'createFlock()'}">${edit?'Update':'Create'} Flock</button>`;
+}
+
+function recordForm() {
+  return modalHead('Daily Record') + `
+    <div class="form-group"><label>Flock</label><select id="r_flock">${activeFlockOpts()}</select></div>
+    <div class="form-group"><label>Date</label><input id="r_date" type="date" value="${today()}"></div>
+    <div class="form-group"><label>Birds Dead Today</label><input id="r_dead" type="number" value="0" min="0"></div>
+    <div class="form-group"><label>Eggs Collected</label><input id="r_eggs" type="number" value="0" min="0"></div>
+    <div class="form-group"><label>Feed Used (kg)</label><input id="r_feed" type="number" value="0" step="0.1" min="0"></div>
+    <div class="form-group"><label>Notes</label><textarea id="r_notes" rows="2" placeholder="Any observations..."></textarea></div>
+    <button class="btn btn-primary" onclick="saveRecord()">Save Record</button>`;
+}
+
+function saleForm() {
+  return modalHead('Record Sale') + `
+    <div class="form-group"><label>Flock</label><select id="s_flock">${activeFlockOpts()}</select></div>
+    <div class="form-group"><label>Type</label><select id="s_type">
+      <option value="Eggs">Eggs (tray)</option><option value="Live Bird">Live Bird</option>
+      <option value="Dressed Bird">Dressed Bird</option><option value="Manure">Manure</option><option value="Other">Other</option>
+    </select></div>
+    <div class="form-group"><label>Quantity</label><input id="s_qty" type="number" value="1" min="1" oninput="autoCalcSale()"></div>
+    <div class="form-group"><label>Unit Price (UGX)</label><input id="s_price" type="number" value="0" min="0" oninput="autoCalcSale()"></div>
+    <div class="form-group"><label>Total (UGX)</label><input id="s_amount" type="number" value="0" min="0" oninput="lockSaleCalc()"></div>
+    <div class="form-group"><label>Avg Weight / Bird (kg)</label><input id="s_weight" type="number" value="0" step="0.1" min="0" placeholder="For FCR calculation"></div>
+    <div class="form-group"><label>Date</label><input id="s_date" type="date" value="${today()}"></div>
+    <div class="form-group"><label>Buyer</label><input id="s_buyer" placeholder="Buyer name (optional)"></div>
+    <button class="btn btn-primary" onclick="saveSale()">Record Sale</button>`;
+}
+
+function expenseForm() {
+  return modalHead('Add Expense') + `
+    <div class="form-group"><label>Flock</label><select id="e_flock">${activeFlockOpts()}</select></div>
+    <div class="form-group"><label>Category</label><select id="e_cat">
+      ${['Vaccines','Medicine','Equipment','Labour','Transport','Utilities','Housing','Feed (other)','Other'].map(c => `<option>${c}</option>`).join('')}
+    </select></div>
+    <div class="form-group"><label>Amount (UGX)</label><input id="e_amount" type="number" value="0" min="0"></div>
+    <div class="form-group"><label>Date</label><input id="e_date" type="date" value="${today()}"></div>
+    <div class="form-group"><label>Notes</label><textarea id="e_notes" rows="2"></textarea></div>
+    <button class="btn btn-primary" onclick="saveExpense()">Save Expense</button>`;
+}
+
+function feedForm() {
+  return modalHead('Feed Purchase') + `
+    <div class="form-group"><label>Flock</label><select id="fd_flock">${activeFlockOpts()}</select></div>
+    <div class="form-group"><label>Type</label><select id="fd_type">
+      ${['Starter','Grower','Finisher','Layers Mash','Maize Bran','Other'].map(t => `<option>${t}</option>`).join('')}
+    </select></div>
+    <div class="form-group"><label>Quantity (kg)</label><input id="fd_qty" type="number" value="0" step="0.5" min="0"></div>
+    <div class="form-group"><label>Total Cost (UGX)</label><input id="fd_cost" type="number" value="0" min="0"></div>
+    <div class="form-group"><label>Date</label><input id="fd_date" type="date" value="${today()}"></div>
+    <button class="btn btn-primary" onclick="saveFeed()">Save Purchase</button>`;
+}
+
+function healthForm() {
+  return modalHead('Health Record') + `
+    <div class="form-group"><label>Flock</label><select id="h_flock">${activeFlockOpts()}</select></div>
+    <div class="form-group"><label>Type</label><select id="h_type">
+      <option value="Vaccine">Vaccination</option>
+      <option value="Medication">Medication</option>
+      <option value="Vitamin">Vitamins/Supplements</option>
+      <option value="Checkup">Health Check</option>
+      <option value="Other">Other</option>
+    </select></div>
+    <div class="form-group"><label>Name / Description</label><input id="h_name" placeholder="e.g. Newcastle, Gumboro, Deworming"></div>
+    <div class="form-group"><label>Date Administered</label><input id="h_date" type="date" value="${today()}"></div>
+    <div class="form-group"><label>Next Due Date (optional)</label><input id="h_next" type="date"></div>
+    <div class="form-group"><label>Notes</label><textarea id="h_notes" rows="2"></textarea></div>
+    <button class="btn btn-primary" onclick="saveHealth()">Save Record</button>`;
+}
+
+function closeFlockForm(id) {
+  return modalHead('Close Flock') + `
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px">Mark this flock as sold or lost. It will be moved out of active flocks.</p>
+    <div class="form-group"><label>Status</label><select id="cf_status">
+      <option value="sold">Sold</option><option value="loss">Lost (high mortality)</option>
+    </select></div>
+    <div class="form-group"><label>Close Date</label><input id="cf_date" type="date" value="${today()}"></div>
+    <button class="btn btn-primary" onclick="closeFlockSubmit('${id}')">Close Flock</button>`;
+}
+
+function userForm(data) {
+  const edit = !!data;
+  return modalHead(edit?'Edit Employee':'Add Employee') + `
+    ${!edit ? `
+    <div class="form-group"><label>Username</label><input id="u_username" placeholder="e.g. john"></div>
+    <div class="form-group"><label>Passcode</label><input id="u_password" type="password" placeholder="Min 4 characters"></div>` : ''}
+    <div class="form-group"><label>Display Name</label><input id="u_display" value="${data?.displayName||''}" placeholder="e.g. John"></div>
+    <div class="form-group"><label>Role</label><select id="u_role">
+      <option value="employee" ${data?.role==='employee'?'selected':''}>Employee</option>
+      <option value="admin" ${data?.role==='admin'?'selected':''}>Farm Manager</option>
+    </select></div>
+    ${edit ? `<div class="form-group"><label>New Passcode (leave empty to keep current)</label><input id="u_password" type="password" placeholder="Leave empty to keep"></div>` : ''}
+    <button class="btn btn-primary" onclick="${edit?`editUserSubmit('${data.id}')`:'createUser()'}">${edit?'Update':'Add'} Employee</button>`;
+}
+
+function settingsForm() {
+  return modalHead('Settings') + `
+    <div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="nav-avatar" style="width:48px;height:48px;font-size:20px">${initials(currentUser?.displayName)}</div>
+        <div><div style="font-weight:700;font-size:16px">${currentUser?.displayName||'User'}</div><div style="font-size:13px;color:var(--text-secondary)">${currentUser?.username} &middot; <span class="role-badge ${currentUser?.role}">${currentUser?.role}</span></div></div>
+      </div>
+    </div>
+    <div class="form-group"><label>Current Passcode</label><input id="cp_old" type="password"></div>
+    <div class="form-group"><label>New Passcode</label><input id="cp_new" type="password" placeholder="Min 4 characters"></div>
+    <button class="btn btn-primary" onclick="changePasscode()">Change Passcode</button>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="doLogout()">${I.logout} Sign Out</button></div>`;
+}
+
+// ======================== ACTIONS ========================
+async function createFlock() {
+  const name = document.getElementById('f_name').value.trim();
+  if (!name) { toast('Enter flock name', 'error'); return; }
+  try {
+    await API.post('/api/flocks', {
+      name, breed: document.getElementById('f_breed').value,
+      quantity: Number(document.getElementById('f_qty').value) || 0,
+      date: document.getElementById('f_date').value || today(),
+      notes: document.getElementById('f_notes').value.trim()
+    });
+    await loadAll(); closeModal(); toast('Flock created!', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function editFlockSubmit(id) {
+  try {
+    await API.put('/api/flocks/' + id, {
+      name: document.getElementById('f_name').value.trim(),
+      breed: document.getElementById('f_breed').value,
+      quantity: Number(document.getElementById('f_qty').value) || 0,
+      date: document.getElementById('f_date').value,
+      notes: document.getElementById('f_notes').value.trim()
+    });
+    await loadAll(); closeModal(); toast('Flock updated', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function editFlock(id) { const f = cache.flocks.find(x => x.id === id); if (f) showModal('editFlock', f); }
+function closeFlock(id) { showModal('closeFlock', id); }
+
+async function closeFlockSubmit(id) {
+  try {
+    await API.put('/api/flocks/' + id, {
+      status: document.getElementById('cf_status').value,
+      close_date: document.getElementById('cf_date').value || today()
+    });
+    await loadAll(); closeModal(); toast('Flock closed', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function saveRecord() {
+  const flock_id = document.getElementById('r_flock').value;
+  if (!flock_id) { toast('Select a flock', 'error'); return; }
+  try {
+    await API.post('/api/records', {
+      flock_id, date: document.getElementById('r_date').value || today(),
+      dead: Number(document.getElementById('r_dead').value) || 0,
+      eggs: Number(document.getElementById('r_eggs').value) || 0,
+      feed: Number(document.getElementById('r_feed').value) || 0,
+      notes: document.getElementById('r_notes').value.trim()
+    });
+    await loadAll(); closeModal(); toast('Daily record saved!', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+let saleCalcLocked = false;
+function autoCalcSale() {
+  if (saleCalcLocked) return;
+  const qty = Number(document.getElementById('s_qty').value) || 0;
+  const price = Number(document.getElementById('s_price').value) || 0;
+  document.getElementById('s_amount').value = qty * price;
+}
+function lockSaleCalc() {
+  const el = document.getElementById('s_amount');
+  const manual = Number(el.value);
+  const auto = (Number(document.getElementById('s_qty').value)||0) * (Number(document.getElementById('s_price').value)||0);
+  saleCalcLocked = manual !== auto && manual > 0;
+}
+
+async function saveSale() {
+  const flock_id = document.getElementById('s_flock').value;
+  if (!flock_id) { toast('Select a flock', 'error'); return; }
+  const qty = Number(document.getElementById('s_qty').value) || 1;
+  const price = Number(document.getElementById('s_price').value) || 0;
+  const amount = Number(document.getElementById('s_amount').value) || (qty * price);
+  try {
+    await API.post('/api/sales', {
+      flock_id, type: document.getElementById('s_type').value, qty, price, amount,
+      avgWeight: Number(document.getElementById('s_weight').value) || 0,
+      date: document.getElementById('s_date').value || today(),
+      buyer: document.getElementById('s_buyer').value.trim()
+    });
+    await loadAll(); closeModal(); toast('Sale recorded!', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function saveExpense() {
+  const flock_id = document.getElementById('e_flock').value;
+  if (!flock_id) { toast('Select a flock', 'error'); return; }
+  try {
+    await API.post('/api/expenses', {
+      flock_id, category: document.getElementById('e_cat').value,
+      amount: Number(document.getElementById('e_amount').value) || 0,
+      date: document.getElementById('e_date').value || today(),
+      notes: document.getElementById('e_notes').value.trim()
+    });
+    await loadAll(); closeModal(); toast('Expense saved!', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function saveFeed() {
+  const flock_id = document.getElementById('fd_flock').value;
+  if (!flock_id) { toast('Select a flock', 'error'); return; }
+  try {
+    await API.post('/api/feeds', {
+      flock_id, type: document.getElementById('fd_type').value,
+      quantity: Number(document.getElementById('fd_qty').value) || 0,
+      cost: Number(document.getElementById('fd_cost').value) || 0,
+      date: document.getElementById('fd_date').value || today()
+    });
+    await loadAll(); closeModal(); toast('Feed purchase saved!', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function saveHealth() {
+  const flock_id = document.getElementById('h_flock').value;
+  if (!flock_id) { toast('Select a flock', 'error'); return; }
+  const name = document.getElementById('h_name').value.trim();
+  if (!name) { toast('Enter treatment name', 'error'); return; }
+  try {
+    await API.post('/api/health', {
+      flock_id, type: document.getElementById('h_type').value, name,
+      date: document.getElementById('h_date').value || today(),
+      next_due_date: document.getElementById('h_next').value || null,
+      notes: document.getElementById('h_notes').value.trim()
+    });
+    await loadAll(); closeModal(); toast('Health record saved!', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function completeHealth(id) {
+  try {
+    await API.put('/api/health/' + id, { completed: true });
+    await loadAll(); toast('Marked as completed', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function createUser() {
+  const username = document.getElementById('u_username').value.trim();
+  const password = document.getElementById('u_password').value;
+  const displayName = document.getElementById('u_display').value.trim() || username;
+  const role = document.getElementById('u_role').value;
+  if (!username) { toast('Enter username', 'error'); return; }
+  if (!password || password.length < 4) { toast('Passcode must be at least 4 characters', 'error'); return; }
+  try {
+    await API.post('/api/users', { username, password, displayName, role });
+    await loadAll(); closeModal(); toast('Employee added!', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function editUser(id) {
+  const u = cache.users.find(x => x.id === id);
+  if (u) showModal('editUser', u);
+}
+
+async function editUserSubmit(id) {
+  const displayName = document.getElementById('u_display').value.trim();
+  const role = document.getElementById('u_role').value;
+  const password = document.getElementById('u_password').value;
+  const body = { displayName, role };
+  if (password) body.password = password;
+  try {
+    await API.put('/api/users/' + id, body);
+    await loadAll(); closeModal(); toast('User updated', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function toggleUser(id) {
+  const u = cache.users.find(x => x.id === id);
+  if (!u) return;
+  try {
+    await API.put('/api/users/' + id, { isActive: !u.isActive });
+    await loadAll(); toast(u.isActive ? 'User deactivated' : 'User activated', 'success'); renderPage();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function showSettings() { showModal('settings'); }
+
+async function changePasscode() {
+  const old = document.getElementById('cp_old').value;
+  const nu = document.getElementById('cp_new').value;
+  if (!old || !nu || nu.length < 4) { toast('Fill both fields (new must be 4+ chars)', 'error'); return; }
+  try {
+    await API.post('/api/change-passcode', { currentPassword: old, newPassword: nu });
+    toast('Passcode changed!', 'success'); closeModal();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function exportData() {
+  try {
+    const data = await API.get('/api/export');
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'poultry_backup_' + today() + '.json';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    toast('Data exported!', 'success');
+  } catch (e) { toast('Export failed: ' + e.message, 'error'); }
+}
+
+// ======================== SERVICE WORKER ========================
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// Splash screen auto-hide in case something stalls
+setTimeout(() => {
+  const s = document.getElementById('splash');
+  if (s) s.classList.add('hide-splash');
+}, 4000);
+
+function hideSplash() {
+  const s = document.getElementById('splash');
+  if (s) s.classList.add('hide-splash');
+}
+
+// ======================== INIT ========================
+(async function init() {
+  try {
+    if (API._token) {
+      const me = await API.get('/api/me');
+      currentUser = me;
+      await loadAll();
+      hideLogin();
+      renderPage();
+    } else {
+      showLogin();
+    }
+  } catch (e) {
+    showLogin();
+  }
+  hideSplash();
+})();
+</script>
+</body>
+</html>
